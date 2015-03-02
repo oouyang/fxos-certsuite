@@ -28,6 +28,8 @@ from marionette_extension import install as marionette_install
 from mozfile import TemporaryDirectory
 from mozlog.structured import structuredlog, handlers, formatters
 
+from reportmanager import ReportManager
+
 import gaiautils
 import report
 
@@ -81,42 +83,6 @@ def log_metadata():
     for key in sorted(metadata.keys()):
         logger.info("fxos-certsuite %s: %s" % (key, metadata[key]))
 
-class ReportManager(object):
-    def __init__(self):
-        self.zip_file = None
-        self.subsuite_results = None
-        self.structured_path = None
-
-    def setup_report(self, zip_file = None, 
-        subsuite_results = None, 
-        structured_path = None):
-        self.time = datetime.now()
-        self.zip_file = zip_file
-        self.subsuite_results = subsuite_results
-        self.structured_path = structured_path
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *arfs, **kwargs):
-        if self.structured_path:
-            self.add_summary_report(self.structured_path)
-
-    def add_subsuite_report(self, path):
-        results = report.parse_log(path)
-        self.subsuite_results.append(results)
-        if not results.is_pass:
-            html_str = report.subsuite.make_report(results)
-            path = "%s/report.html" % results.name
-            self.zip_file.writestr(path, html_str)
-
-    def add_summary_report(self, path):
-        summary_results = report.parse_log(path)
-        html_str = report.summary.make_report(self.time,
-                                              summary_results,
-                                              self.subsuite_results)
-        path = "report.html"
-        self.zip_file.writestr(path, html_str)
 
 class LogManager(object):
     def __init__(self):
@@ -403,7 +369,7 @@ def run_tests(args, config):
             output_zipfile = log_manager.zip_path
             setup_logging(log_manager)
             report_manager.setup_report(log_manager.zip_file,
-                    log_manager.subsuite_results)
+                    log_manager.subsuite_results, log_manager.structured_path)
 
             log_metadata()
             adb = create_adb()
@@ -423,10 +389,6 @@ def run_tests(args, config):
 
             if error:
                 logger.critical("Encountered errors during run")
-
-            report_manager.setup_report(log_manager.zip_file, 
-                log_manager.subsuite_results, log_manager.structured_path)
-
     except (SystemExit, KeyboardInterrupt):
         logger.info("Testrun interrupted")
     except:
