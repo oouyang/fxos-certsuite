@@ -29,6 +29,7 @@ from mozfile import TemporaryDirectory
 from mozlog.structured import structuredlog, handlers, formatters
 
 from reportmanager import ReportManager
+from logmanager import LogManager
 
 import gaiautils
 import report
@@ -82,35 +83,6 @@ def log_metadata():
     metadata = get_metadata()
     for key in sorted(metadata.keys()):
         logger.info("fxos-certsuite %s: %s" % (key, metadata[key]))
-
-
-class LogManager(object):
-    def __init__(self):
-        self.time = datetime.now()
-        self.structured_path = "run.log"
-        self.zip_path = 'firefox-os-certification_%s.zip' % (time.strftime("%Y%m%d%H%M%S"))
-        self.structured_file = None
-        self.subsuite_results = []
-
-    def add_file(self, path, file_obj):
-        self.zip_file.write(path, file_obj)
-
-    def __enter__(self):
-        self.zip_file = zipfile.ZipFile(self.zip_path, 'w', zipfile.ZIP_DEFLATED)
-        self.structured_file = open(self.structured_path, "w")
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        try:
-            self.structured_file.__exit__(*args, **kwargs)
-            self.zip_file.write(self.structured_path)
-            # self.add_summary_report(self.structured_path)
-        finally:
-            try:
-                os.unlink(self.structured_path)
-            finally:
-                self.zip_file.__exit__(*args, **kwargs)
-
 
 # Consider upstreaming this to marionette-client:
 class MarionetteSession(object):
@@ -303,7 +275,7 @@ class TestRunner(object):
 
         cmd = [suite_opts['cmd']]
 
-        log_name = "%s/%s_structured%s.log" % (temp_dir, suite, "_".join(item.replace("/", "-") for item in groups))
+        log_name = "%s/%s_structured_%s.log" % (temp_dir, suite, "_".join(item.replace("/", "-") for item in groups))
         cmd.extend(["--log-raw=-"])
 
         if groups:
