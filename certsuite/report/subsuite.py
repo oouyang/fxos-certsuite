@@ -125,18 +125,9 @@ class HTMLBuilder(object):
                     html.td(cell_expected,
                             class_="condition col-expected %s %s" % (class_expected, odd_or_even)),
                     html.td(subtest_data["status"].title(),
-                            class_="condition col-result %s %s" % (subtest_data["status"], odd_or_even))
-                ])
-                if cell_message == "":
-                    rv.extend([
-                        html.tr(cells, class_='passed result_table_row'),
-                        html.tr(html.td(cell_message, class_='debug', colspan=5))
-                        ])
-                else:
-                    rv.extend([
-                        html.tr(cells, class_='error result_table_row'),
-                        html.tr(html.td(html.div(cell_message, class_='log'), class_='debug', colspan=5))
-                        ])
+                            class_="condition col-result %s %s" % (subtest_data["status"], odd_or_even)),
+                    html.td(html.div(cell_message, class_='log'), class_='debug')
+                ])                
         return rv
 
     def get_cell_expected(self, subtest_data):
