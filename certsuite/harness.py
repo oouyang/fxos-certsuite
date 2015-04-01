@@ -216,12 +216,12 @@ class TestRunner(object):
 
         cmd.extend(item % subn for item in suite_opts.get("run_args", []))
         cmd.extend(item % subn for item in suite_opts.get("common_args", []))
-        
+
         if self.args.debug and suite == 'webapi':
             cmd.append('-v')
         if self.args.debug and suite == 'cert':
             cmd.append('--debug')
-            
+
         if self.args.device_profile or self.args.edit_device_profile:
             if suite == 'webapi' or suite == 'cert':
                 device_profile = self.args.device_profile or self.args.edit_device_profile
@@ -382,19 +382,19 @@ def list_tests(args, config):
         print "%s:%s" % (test, group)
     return True
 
-def edit_device_profile(device_profile_path):
+def edit_device_profile(device_profile_path, question):
     resp = ''
+    result = None
     try:
         env = environment.get(environment.InProcessTestEnvironment, addr=None, verbose=False)
         url = "http://%s:%d/profile.html" % (env.server.addr[0], env.server.addr[1])
         webbrowser.open(url)
         environment.env.handler = server.wait_for_client()
-        
-        question = ''
+
         resp = environment.env.handler.prompt(question)
 
-        message = 'Create device profile failed!!'    
-        if resp != '':
+        message = 'Create device profile failed!!'
+        if resp != '' and resp != None:
             result = json.loads(resp)
             if result['return'] == 'ok':
                 with open(device_profile_path, 'w') as device_profile_f:
@@ -407,10 +407,11 @@ def edit_device_profile(device_profile_path):
         logger.info(message)
     except:
         logger.error("Failed create device profile:\n%s" % traceback.format_exc())
-    
-    return True
 
-def check_device_profile(device_profile_path):
+    return result
+
+def load_device_profile(device_profile_path):
+    device_profile_object = None
     try:
         with open(device_profile_path, 'r') as device_profile_file:
             device_profile_object = json.load(device_profile_file)
@@ -419,8 +420,57 @@ def check_device_profile(device_profile_path):
             else:
                 if not 'contact' in device_profile_object['result']:
                     logger.error('Invalide device profile file [%s]' % device_profile_path)
+            return device_profile_object
     except:
         logger.critical("Encountered error at checking device profile file [%s]:\n%s" % (device_profile_path, traceback.format_exc()))
+    finally:
+        return device_profile_object
+
+def prepare_devcie_profile(profile_path, edit_profile_path, suites):
+    unlink_profile = True
+    profile_object = None
+    load_profile = False
+    edit_profile = False
+
+    if profile_path:
+        unlink_profile = False
+        load_profile = True
+        if os.path.exists(profile_path):
+            edit_profile = True
+    else:
+        profile_path = os.path.abspath('device_profile.json')
+
+    if edit_profile_path:
+        unlink_profile = False
+        edit_profile = True
+        if not profile_path:
+            profile_path = edit_profile_path
+            load_profile = True
+
+    if load_profile:
+        profile_object = load_device_profile(profile_path)
+
+    if edit_profile:
+        profile_data = {}
+        loaded_profile = {} if profile_object['return'] != 'ok' else profile_object['result']
+        for test, group in iter_test_lists(suites):
+            if test not in profile_data.keys():
+                profile_data[test] = []
+            checked = True if group not in loaded_profile[test] else False
+            profile_data[test].append({
+                'id': group,
+                'checked': checked,
+                'hidden': False
+            })
+
+        data_string = json.dumps(profile_data)
+        #logger.suite_start(tests=profile_data)
+        
+        result = edit_device_profile(profile_path, data_string)
+        if result:
+            profile_object = result
+
+    return unlink_profile, profile_object, profile_path
 
 def run_tests(args, config):
     error = False
@@ -431,19 +481,12 @@ def run_tests(args, config):
             output_zipfile = log_manager.zip_path
             setup_logging(log_manager.structured_file)
 
-            if args.edit_device_profile:
-                report_manager.unlink_devcie_profile_file = False
-                report_manager.device_profile_path = args.edit_device_profile
-            else:
-                report_manager.device_profile_path = os.path.abspath('device_profile.json')
-            
-            if args.device_profile:
-                report_manager.unlink_devcie_profile_file = False
-                report_manager.device_profile_path = args.device_profile
-            else:
-                edit_device_profile(report_manager.device_profile_path)
-
-            check_device_profile(report_manager.device_profile_path)
+            unlink_profile, profile_object, profile_path = prepare_devcie_profile(args.edit_device_profile,
+                                                                    args.device_profile,
+                                                                    config['suites'])
+            report_manager.unlink_devcie_profile_file = unlink_profile
+            report_manager.device_profile_object = profile_object
+            report_manager.device_profile_path = profile_path
 
             report_manager.setup_report(log_manager.zip_file, log_manager.structured_path)
 
