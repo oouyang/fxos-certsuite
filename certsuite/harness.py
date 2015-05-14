@@ -324,6 +324,10 @@ def check_preconditions(config):
     check_marionette_installed = lambda device: install_marionette(device, config['version'])
 
     device = check_adb()
+
+    logger.info('run adbd as root')
+    device.root()
+
     if not device:
         sys.exit(1)
 
@@ -362,6 +366,8 @@ class NoADB():
     def get_process_list(self):
         return [[1447, '/sbin/adbd', 'root']]
     def restart(self):
+        pass
+    def root(self):
         pass
 
 def check_adb():
