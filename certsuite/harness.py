@@ -342,7 +342,7 @@ def check_preconditions(config):
             logger.critical("Error during precondition check:\n%s" % traceback.format_exc())
             passed = False
         if not passed:
-            device.reboot()
+            #device.reboot()
             sys.exit(1)
 
     logger.info("Passed precondition checks")
