@@ -9,6 +9,8 @@ understand the cert suite's results.
 **report.html**
 ----------------
 
+This file contains the results of all PASS/FAIL tests run by the cert suite,
+including the webapi tests, the web-platform-tests, and the webIDL tests.
 There are 3 sections in **report.html**.
 
 1.  **Device Information** 
