@@ -62,7 +62,7 @@ Windows Prerequest
 
 Note
 ----
-For windows XP, please install the following windows components before above components
+For windows XP and 2003, please install the following windows components before above components
 
 * .NET https://msdn.microsoft.com/en-us/vstudio/aa496123.aspx
 * PowerShell https://www.microsoft.com/en-us/download/details.aspx?id=9591
