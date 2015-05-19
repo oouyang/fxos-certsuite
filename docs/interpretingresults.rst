@@ -15,6 +15,7 @@ There are 3 sections in **report.html**.
 
     Device information provide by the user in the first time run the MCTS scripts and it's the basic information about the target testing device. 
     
+    The information is stored by device profile, you can reference device profile section.
 
 #.  **Test Results**
     
