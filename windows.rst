@@ -9,7 +9,7 @@ Windows Prerequest
 * virtualenv              https://virtualenv.pypa.io/en/latest/installation.html 
 
 Note
-====
+----
 For windows XP, please install the following windows components before above components
 
 * .NET https://msdn.microsoft.com/en-us/vstudio/aa496123.aspx
