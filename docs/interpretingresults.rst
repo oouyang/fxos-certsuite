@@ -6,6 +6,57 @@ After running the FxOS Certification Suite, a result file will be generated
 Inside this file are several logs; you need to review two of these to
 understand the cert suite's results.
 
+**Device Profile**
+------------------
+
+Device Profile provide user to add extra information for target testing device.
+There are two parts in the device profile. The first part is the basic information about the testing device. The other part information controls the tests run.
+
+The basic information part contains the device 2 category information - device information and company information. The device information includes device name, gaia and gecko version. Company information includes company name and email.
+
+The rest of the device profile records the tests which will be ran and skipped information. If the device doesn't support some firefox os feature, you can skip related tests. For example, some device has no external storage support. You can skip the tests related to mobile device. The tests related to mobile device will still be listed in the final report but marked as skipped by device profile.
+
+The device profile need to be set when you first time run MCTS. If you would like to the change the device profile, you can add '--edit-profile' parameter to launch the device profile edit page again. 
+
+**report.html**
+----------------
+
+There are 3 sections in **report.html**.
+
+1.  **Device Information** 
+
+    Device information provide by the user in the first time run the MCTS scripts and it's the basic information about the target testing device. 
+    
+
+#.  **Test Results**
+    
+    The test results use a table to give a summary of the MCTS results. The first column gives the subsuite name, the second column gives the running test count information, and the last column provides the detail subsuite test results links and user could click the links to get details information.
+
+   The color of the second column has different meanings.
+
+   * **green** The test is PASS without failure and error
+   * **blue** The test result is not fully PASS. Need to check the details sub-suite report to clarify the failures.
+   * **red** There is error when running the test. Need to check the details sub-suite to find more information.
+    
+3.  **Details log information**
+
+    The details log information provide some extra information related to the testing results.
+    This information helps engineer to know more details about the test.
+
+
+**Sub-suite report**
+----------------------------------------
+
+The information in the sub-suite report is displayed when you click the details columns in test results table. If there are failures and errors, we can check more information in sub-suite report. There are 2 sections.
+
+1. Errors Table
+
+ This table is optional table. It's only displayed when there is error when running the tests. You can find the hints about how the errors happen.
+
+2. Regressions Table
+
+ This table always display what tests are run. The first and second columns are the names of the test and sub-test. The rest columns provide the expected result and test result. If the test failed or need shows extra information, there is extra row displayed below the related test. 
+
 The results.html file
 ---------------------
 
