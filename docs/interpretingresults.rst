@@ -4,7 +4,11 @@ Interpreting results
 After running the FxOS Certification Suite, a result file will be generated
 (firefox-os-certification_timestamp.zip by default) in the current directory.
 Inside this file are several logs; you need to review two of these to
-understand the cert suite's results.
+understand the cert suite's results. The zip file contains multiple files. 
+The most important file is the report.html. 
+You can get most of the test result within the report.html. 
+The other files are related log files for engineering invesgate more details test behaviour.
+
 
 **report.html**
 ----------------
