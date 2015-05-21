@@ -170,7 +170,7 @@ class TestRunner(object):
 
             # stingray only test 'webapi' part
             if self.args.mode == 'stingray':
-                default_tests = [default_tests['webapi']]
+                default_tests = ['webapi', 'security']
 
             tests = default_tests
         else:
@@ -207,6 +207,7 @@ class TestRunner(object):
     def generate_retry(self):
         test_map = {'certsuite' : 'cert',
                     'webapi' : 'webapi',
+                    'securitysuite' : 'security',
                     'web-platform-tests':'web-platform-tests'}
 
         failed = []
@@ -316,8 +317,8 @@ class TestRunner(object):
         output_files = [log_name]
         output_files += [item % subn for item in suite_opts.get("extra_files", [])]
 
-        if self.args.mode == 'stingray' and suite == 'webapi':
-            cmd.extend([u'--host=%s' % _host, u'--port=%s' % _port])
+        if self.args.mode == 'stingray' and (suite == 'webapi' or suite == 'security'):
+            cmd.extend([u'--host=%s' % _host, u'--port=%s' % _port, u'--mode=stingray'])
 
         return cmd, output_files, log_name
 
