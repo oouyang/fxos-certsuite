@@ -67,6 +67,3 @@ For windows XP and 2003, please install the following windows components before 
 * .NET https://msdn.microsoft.com/en-us/vstudio/aa496123.aspx
 * PowerShell https://www.microsoft.com/en-us/download/details.aspx?id=9591
 
-
-.. raw:: html
-<iframe width="640" height="390" src="https://www.youtube.com/embed/svo84aX4j24" frameborder="0" allowfullscreen></iframe>
