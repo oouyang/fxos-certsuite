@@ -10,7 +10,7 @@ import mozdevice
 # getter for shared logger instance
 from mozlog.structured import get_default_logger
 
-from certsuite.harness import check_adb
+from webapi_tests.semiauto.devicehelper import DeviceHelper
 
 # ######################################################################################################################
 # shared module functions
@@ -44,7 +44,8 @@ class b2gps(object):
     def __init__(self):
         self.logger = get_default_logger()
         try:
-            self.dm = mozdevice.DeviceManagerADB(runAdbAsRoot=True)
+            #self.dm = mozdevice.DeviceManagerADB(runAdbAsRoot=True)
+            self.dm = DeviceHelper.getDevice(runAdbAsRoot=True)
         except mozdevice.DMError as e:
             self.logger.error("Error connecting to device via adb (error: %s). Please be "
                               "sure device is connected and 'remote debugging' is enabled." %
@@ -83,7 +84,8 @@ class procpid(object):
     def __init__(self):
         self.logger = get_default_logger()
         try:
-            self.dm = mozdevice.DeviceManagerADB(runAdbAsRoot=True)
+            #self.dm = mozdevice.DeviceManagerADB(runAdbAsRoot=True)
+            self.dm = DeviceHelper.getDevice(runAdbAsRoot=True)
         except mozdevice.DMError as e:
             self.logger.error("Error connecting to device via adb (error: %s). Please be "
                               "sure device is connected and 'remote debugging' is enabled." %
@@ -117,7 +119,7 @@ class seccomp(ExtraTest):
     module = sys.modules[__name__]
 
     @classmethod
-    def run(cls, version=None, host='localhost', port=2828, hasadb=True):
+    def run(cls, version=None):
         logger = get_default_logger()
 
         try:
