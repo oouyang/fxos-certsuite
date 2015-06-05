@@ -170,12 +170,14 @@ class Device(object):
     def __exit__(self, *args, **kwargs):
         logger.info("Tearing down device after testing")
         # Original settings are reinstated by Device.restore
-        shutil.rmtree(self.backup_path)
+        #shutil.rmtree(self.backup_path)
 
     def local_dir(self, remote):
         return os.path.join(self.backup_path, remote.lstrip("/"))
 
     def backup(self):
+        print 'ZTE: skip backup'
+        return
         logger.info("Backing up device state")
         self.backup_path = tempfile.mkdtemp()
 
@@ -194,6 +196,8 @@ class Device(object):
             self.adb.getFile(remote_path, local_path)
 
     def restore(self):
+        print 'ZTE: skip restore'
+        return
         logger.info("Restoring device state")
         self.adb.remount()
 
